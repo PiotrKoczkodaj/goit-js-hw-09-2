@@ -3,35 +3,20 @@ import "flatpickr/dist/flatpickr.min.css";
 
 const input = document.querySelector('#datetime-picker');
 const startBtn = document.querySelector('button[data-start]');
+const timerItem = document.querySelector('.timer');
+let timerDays = document.querySelector('span[data-days]');
+const timerHours = document.querySelector('span[data-hours]');
+const timerMinutes = document.querySelector('span[data-minutes]');
+const timerSeconds = document.querySelector('span[data-seconds]');
+
+
+timerItem.style.display = 'flex';
+timerItem.style.justifyContent = 'space-evenly';
+timerItem.style.width = '24%';
+timerItem.style.marginLeft = '-16px';
 
 startBtn.disabled = true;
 
-flatpickr(input,
-    {
-    enableTime: true,
-    dateFormat: "Y-m-d H:i",
-    time_24hr: true,
-    defaultDate: new Date(),
-    minuteIncrement: 1,
-        onClose(selectedDates) {
-        let selectedDatesMs = selectedDates[0].getTime();
-        let actualDateMs = new Date().getTime();
-        
-            if (selectedDatesMs < actualDateMs) {
-                window.alert("Please choose a date in the future")
-            } else {
-                startBtn.disabled = false
-            }
-            console.log(selectedDatesMs-actualDateMs);   
-  },
-    }
-);
-
-
-const increment = () => {
-    
-}
-startBtn.addEventListener('click',increment)
         function convertMs(ms) {
   // Number of milliseconds per unit of time
   const second = 1000;
@@ -50,4 +35,64 @@ startBtn.addEventListener('click',increment)
 
   return { days, hours, minutes, seconds };
 }
-   console.log(convertMs(1724394802))
+
+
+let timer;
+
+flatpickr(input,
+
+    {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    time_24hr: true,
+    defaultDate: new Date(),
+    minuteIncrement: 1,
+    
+        onClose(selectedDates) {
+
+        let selectedDatesMs = selectedDates[0].getTime();
+        let actualDateMs = new Date().getTime();
+            
+            if (selectedDatesMs < actualDateMs) {
+                window.alert("Please choose a date in the future")
+            } else {
+                startBtn.disabled = false;
+                let calculateMS = selectedDatesMs - actualDateMs;
+                const startBtnOnClick = () => { 
+                    console.log(convertMs(calculateMS)); 
+                    timerDays.textContent = convertMs(calculateMS).days;
+                    timerHours.textContent = convertMs(calculateMS).hours;
+                    timerMinutes.textContent = convertMs(calculateMS).minutes;
+                    timerSeconds.textContent = convertMs(calculateMS).seconds;
+
+
+                    timer = setInterval(() => {
+                        timerSeconds.textContent--;
+                        if (timerSeconds.textContent === '0') {
+                            timerMinutes.textContent--;
+                            timerSeconds.textContent = 59;
+                            
+                        }
+                        if (timerMinutes.textContent === '0') {
+                            timerHours.textContent--;
+                            timerMinutes.textContent = 59;
+                            
+                        }
+                        if (timerHours.textContent === '0') {
+                            timerDays.textContent--;
+                            timerHours.textContent = 23;
+                        }
+                        if (timerDays.textContent === '0' & timerHours==='0' & timerMinutes==='0' & timerSeconds=== '0') {
+                            clearInterval(timer)
+                        }
+                    
+                    },100)
+                }
+
+                startBtn.addEventListener('click',startBtnOnClick);
+               
+            };   
+  },
+    }
+);
+
