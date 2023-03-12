@@ -91,7 +91,8 @@ flatpickr(input,
 
                 startBtn.addEventListener('click',startBtnOnClick);
                
-            };   
+            }; 
+  
   },
     }
 );
