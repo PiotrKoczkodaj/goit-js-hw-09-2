@@ -1,20 +1,31 @@
 const form = document.querySelector('.form');
-const delay = document.querySelector('input[name="delay"]');
+const delay = document.querySelector('input[name="delay"]').value;
 const step = document.querySelector('input[name="step"]');
 const amount = document.querySelector('input[name="amount"]');
-console.log(step)
+console.log(delay)
 
 
-function createPromise(position, delay) {
+function createPromise(position,delay) {
   
   const shouldResolve = Math.random() > 0.3;
-  if (shouldResolve) {
-    // Fulfill
 
+  const promise = new Promise((resolve, reject) => {
+
+       setInterval(() => {
+  if (shouldResolve) {
+    resolve(`✅ Fulfilled promise ${obj.position} in ${obj.delay}ms`);
   } else {
-    // Reject
-   
+    reject(`❌ Rejected promise ${position} in ${delay}ms`)
   }
+
+  },delay)
+
+  }).then(resolve => {
+    console.log(resolve)
+  }).then(reject => {
+    console.log(reject)
+  })
 }
 
-form.addEventListener('submit',createPromise)
+// form.addEventListener('click',createPromise)
+createPromise(1,1000)

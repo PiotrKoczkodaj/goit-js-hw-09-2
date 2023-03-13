@@ -4,7 +4,7 @@ import "flatpickr/dist/flatpickr.min.css";
 const input = document.querySelector('#datetime-picker');
 const startBtn = document.querySelector('button[data-start]');
 const timerItem = document.querySelector('.timer');
-let timerDays = document.querySelector('span[data-days]');
+const timerDays = document.querySelector('span[data-days]');
 const timerHours = document.querySelector('span[data-hours]');
 const timerMinutes = document.querySelector('span[data-minutes]');
 const timerSeconds = document.querySelector('span[data-seconds]');
@@ -16,6 +16,8 @@ timerItem.style.width = '24%';
 timerItem.style.marginLeft = '-16px';
 
 startBtn.disabled = true;
+
+
 
         function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -36,20 +38,17 @@ startBtn.disabled = true;
   return { days, hours, minutes, seconds };
 }
 
-
 let timer;
 
 flatpickr(input,
-
     {
     enableTime: true,
     dateFormat: "Y-m-d H:i",
     time_24hr: true,
     defaultDate: new Date(),
-    minuteIncrement: 1,
+        minuteIncrement: 1,
     
         onClose(selectedDates) {
-
         let selectedDatesMs = selectedDates[0].getTime();
         let actualDateMs = new Date().getTime();
             
@@ -58,42 +57,35 @@ flatpickr(input,
             } else {
                 startBtn.disabled = false;
                 let calculateMS = selectedDatesMs - actualDateMs;
-                const startBtnOnClick = () => { 
-                    console.log(convertMs(calculateMS)); 
-                    timerDays.textContent = convertMs(calculateMS).days;
-                    timerHours.textContent = convertMs(calculateMS).hours;
-                    timerMinutes.textContent = convertMs(calculateMS).minutes;
-                    timerSeconds.textContent = convertMs(calculateMS).seconds;
 
-
+                const startBtnOnClick = () => {
+                const addLeadingZero = (value) =>value.toString().padStart(2, '0');
                     timer = setInterval(() => {
-                        timerSeconds.textContent--;
-                        if (timerSeconds.textContent === '0') {
-                            timerMinutes.textContent--;
-                            timerSeconds.textContent = 59;
-                            
-                        }
-                        if (timerMinutes.textContent === '0') {
-                            timerHours.textContent--;
-                            timerMinutes.textContent = 59;
-                            
-                        }
-                        if (timerHours.textContent === '0') {
-                            timerDays.textContent--;
-                            timerHours.textContent = 23;
-                        }
-                        if (timerDays.textContent === '0' & timerHours==='0' & timerMinutes==='0' & timerSeconds=== '0') {
-                            clearInterval(timer)
-                        }
-                    
-                    },100)
-                }
+                        const second = 1000;
+                        const minute = second * 60;
+                        const hour = minute * 60;
+                        const day = hour * 24;
 
+                        const days = Math.floor(calculateMS / day);
+                        const hours = Math.floor((calculateMS % day) / hour);
+                        const minutes = Math.floor(((calculateMS % day) % hour) / minute);
+                        const seconds = Math.floor((((calculateMS % day) % hour) % minute) / second);
+                        
+                        calculateMS -= 1000;
+                        
+                        timerDays.textContent = addLeadingZero(days);
+                        timerHours.textContent = addLeadingZero(hours);
+                        timerMinutes.textContent = addLeadingZero(minutes);
+                        timerSeconds.textContent = addLeadingZero(seconds);
+                        
+                        if (calculateMS < 1000) {
+                            clearInterval(timer);
+                            timerSeconds.textContent = 0
+                        }
+                    }, 100)
+                };
                 startBtn.addEventListener('click',startBtnOnClick);
-               
             }; 
-  
   },
-    }
-);
+    });
 
