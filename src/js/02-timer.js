@@ -82,7 +82,7 @@ flatpickr(input,
                             clearInterval(timer);
                             timerSeconds.textContent = 0
                         }
-                    }, 100)
+                    }, 1000)
                 };
                 startBtn.addEventListener('click',startBtnOnClick);
             }; 
