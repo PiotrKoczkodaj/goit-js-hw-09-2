@@ -1,3 +1,4 @@
+import Notiflix from 'notiflix';
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
@@ -53,7 +54,7 @@ flatpickr(input,
         let actualDateMs = new Date().getTime();
             
             if (selectedDatesMs < actualDateMs) {
-                window.alert("Please choose a date in the future")
+                Notiflix.Notify.failure("Please choose a date in the future")
             } else {
                 startBtn.disabled = false;
                 let calculateMS = selectedDatesMs - actualDateMs;

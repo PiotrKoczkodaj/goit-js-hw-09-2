@@ -1,68 +1,52 @@
+import Notiflix from 'notiflix';
+
+const labels = Array.from(document.querySelectorAll('label'));
+const inputs = Array.from(document.querySelectorAll('input'));
 const form = document.querySelector('.form');
-const delayInput = document.querySelector('input[name="delay"]');
-const step = document.querySelector('input[name="step"]');
-const amountInput = document.querySelector('input[name="amount"]');
-const btn = document.querySelector('button[type="submit"]');
+const submitBtn = document.querySelector(`button[type="submit"]`);
 
+submitBtn.style.fontSize = '15px';
+submitBtn.style.padding = '5px';
 
+for (const label of labels) {
+  label.style.display = 'inline-block';
+  label.style.fontSize = '15px';
+  label.style.fontWeight = '600';
+}
 
-function createPromise(e,position,delay,) {
-  e.preventDefault();
-  delay = Number(delayInput.value);
-  let amountNum = Number(amountInput.value);
-  let stepNum = Number(step.value)
-console.log(typeof(delayNum))
-  let interval = setInterval(() => {
-    const shouldResolve = Math.random() > 0.3;
-    
-  const promise = new Promise((resolve, reject) => {
-    if (shouldResolve) {
-      resolve(`✅ Fulfilled promise ${position} in ${delay}ms`);
-    } else {
-      reject(`❌ Rejected promise ${position} in ${delay}ms`)
-    }
+for (const input of inputs) {
+  input.style.display = 'block';
+  input.style.padding = '5px';
+  input.style.fontSize = '15px';
+}
+
+const createPromise = (position, delay) => {
+  return new Promise((resolve, reject) => {
+    let setTime = setTimeout(() => {
+      const shouldResolve = Math.random() > 0.3;
+      if (shouldResolve) {
+        resolve({ position, delay });
+      } else {
+        reject({ position, delay });
+      }
+    }, delay);
   });
+};
 
-    promise.then(({ position, delay }) => {
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  const valueAmount = Number(form.elements.amount.value);
+  const valueStep = Number(form.elements.step.value);
+  const valueDelay = Number(form.elements.delay.value);
 
-      const positionRendering = () => {
-        
-        for (let i = 1; i<=amount; i++) {
-          return i
-        }
-      };
-
-    console.log(`✅ Fulfilled promise ${position} in ${delay} ms`);
-  }).catch(({position,delay}) => {
-    console.log(`❌ Rejected promise ${position} in ${delay} ms`);
-  });
-
-},delay)
+  for (let i = 1; i <= valueAmount; i += 1) {
+    let stepTime = valueDelay + valueStep * (i - 1);
+    createPromise(i, stepTime)
+      .then(({ position, delay }) => {
+        Notiflix.Notify.success(`✅ Fulfilled promise ${position} in ${delay} ms`)
+      })
+      .catch(({ position, delay }) => {
+       Notiflix.Notify.failure(`❌ Rejected promise ${position} in ${delay} ms`)
+      });
   }
-
-form.addEventListener('submit',createPromise)
-
-// setInterval(() => {
-// const isSuccess = Math.random() > 0.3;
-// const promise = new Promise((resolve, reject) => {
-  
-//     if (isSuccess) {
-//       resolve("Success! Value passed to resolve function");
-//     } else {
-//       reject("Error! Error passed to reject function");
-//     }
-//   });
-
-
-// promise.then(
-//   // onResolve will run third or not at all
-//   value => {
-    
-//     console.log(value); // "Success! Value passed to resolve function"
-//   },
-//   // onReject will run third or not at all
-//   error => {
-    
-//     console.log(error); // "Error! Error passed to reject function"
-//   }
-// )},1000);
+});
